@@ -6,7 +6,7 @@
 /*   By: dgomez-b <dgomez-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 17:38:29 by dgomez-b          #+#    #+#             */
-/*   Updated: 2022/06/15 19:13:35 by dgomez-b         ###   ########.fr       */
+/*   Updated: 2022/06/16 17:18:31 by dgomez-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,42 +40,36 @@ t_list	*ft_rdlst(int fd)
 	return (new);
 }
 
-/*
-	Crea una cadena con espacio suficiente para almacenar toda la cadena
-	almacenada en la lista ("Hasta el primer salto de linea o hasta el final").
-*/
-char	*ft_linespace(t_list *lst)
+char	*ft_lsttostr(t_list *lst)
 {
-	int		i;
+	t_list	*cur;
 	char	*s;
+	int		i;
 
 	if (!lst)
 		return (0);
 	i = 0;
-	while (lst)
+	cur = lst;
+	while (cur)
 	{
-		i += lst->nl;
-		lst = lst->next;
+		i += cur->len;
+		cur = cur->next;
 	}
 	s = malloc(sizeof(char) * (i + 1));
+	if (!s)
+		return (0);
+	i = 0;
+	while (lst)
+	{
+		cur = lst;
+		i += ft_strlcpy(cur->s, s + i, BUFFER_SIZE);
+		lst = cur->next;
+		free(cur);
+	}
 	return (s);
 }
 
-/*
-	Copia la linea almacenada en la lista dentro de la cadena especificada.
-*/
-void	ft_strcpylst(t_list *lst, char *s)
-{
-	int		i;
-
-	if (!lst)
-		return ;
-	i = ft_strlcpy(lst->s, s, BUFFER_SIZE);
-	ft_strcpylst(lst->next, s + i);
-	free(lst);
-}
-
-char	*get_next_line_aux(int fd, char	*aux)
+char	*get_next_line_aux(int fd, char *aux)
 {
 	char	*s1;
 	char	*s2;
@@ -113,34 +107,9 @@ char	*get_next_line(int fd)
 		return (s2);
 	}
 	new = ft_rdlst(fd);
-	s1 = ft_linespace(new);
-	ft_strcpylst(new, s1);
+	s1 = ft_lsttostr(new);
 	s2 = ft_substr(s1, '\n');
 	ft_strlcpy(s1 + ft_strlen(s2), aux, BUFFER_SIZE);
 	free(s1);
 	return (s2);
 }
-
-
-	int main(void)
-	{
-		int		fd;
-		// t_list	*new;
-		char	*s;
-
-		fd = open("gnlTester/files/alternate_line_nl_no_nl", O_RDONLY);
-		// new = ft_rdlst(fd);
-		// s = ft_linespace(new);
-		s = get_next_line(fd);
-		// s = ft_substr("hola\nque tal", '\n');
-		// ft_strcpylst(new, s);
-		printf("%s\n", s);
-		free(s);
-		s = get_next_line(fd);
-		printf("%s\n", s);
-		free(s);
-		close(fd);
-		// while (1);
-		return 0;
-	}
-
