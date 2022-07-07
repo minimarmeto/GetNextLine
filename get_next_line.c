@@ -6,16 +6,12 @@
 /*   By: dgomez-b <dgomez-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 17:38:29 by dgomez-b          #+#    #+#             */
-/*   Updated: 2022/06/16 17:18:31 by dgomez-b         ###   ########.fr       */
+/*   Updated: 2022/07/07 01:43:16 by dgomez-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-/*
-	Crea un nuevo conjunto elemento de lista que comprende una linea del archivo
-	especificcado.
-*/
 t_list	*ft_rdlst(int fd)
 {
 	t_list	*new;
@@ -93,14 +89,16 @@ char	*get_next_line(int fd)
 	char		*s1;
 	char		*s2;
 	t_list		*new;
+	int			i;
 
-	if (fd < 0 || fd > 1000 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (0);
 	if (*aux != 0)
 	{
 		s1 = ft_substr(aux, '\n');
-		ft_strlcpy(aux + ft_strlen(s1), aux, BUFFER_SIZE);
-		if (ft_strlen(aux) != 0)
+		i = ft_strlen(s1);
+		ft_strlcpy(aux + i, aux, BUFFER_SIZE);
+		if (ft_strlen(aux) != 0 || s1[i - 1] == '\n')
 			return (s1);
 		s2 = get_next_line_aux(fd, s1);
 		free(s1);
